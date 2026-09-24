@@ -1,8 +1,11 @@
-# GetMoreRam diagnostic fork (work in progress)
+# GetMoreRam diagnostic fork
 
-Based on upstream, with targeted fixes. **No working iOS build or account-specific
-entitlement approval has been verified yet.** See [technical diagnosis](docs/DIAGNOSIS.md)
-and [test results / remaining gates](docs/VALIDATION.md).
+Based on upstream, with targeted fixes. **The iOS archive and 20 tests passed in
+[GitHub Actions](https://github.com/pipaandthebaskas/GetMoreRam/actions/runs/36000078736).**
+Download the `GetMoreRam-unsigned` artifact from that run and sign it with SideStore.
+Account-specific entitlement approval and the final LiveContainer3 signature remain
+unverified. See [technical diagnosis](docs/DIAGNOSIS.md) and
+[test results / remaining gates](docs/VALIDATION.md).
 
 This app enables an Apple App ID capability and checks the downloaded provisioning
 profile. It does not sign or modify other installed apps. `entitlements: []` from
