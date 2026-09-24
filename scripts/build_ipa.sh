@@ -14,10 +14,10 @@ mkdir -p build
 python3 -m unittest discover -s tests -v
 swift test --package-path Vendor/StosSign --disable-automatic-resolution
 xcodebuild -resolvePackageDependencies -project GetMoreRam.xcodeproj -scheme GetMoreRam \
-  -onlyUseVersionsFromResolvedFile
+  -onlyUsePackageVersionsFromResolvedFile
 xcodebuild archive -project GetMoreRam.xcodeproj -scheme GetMoreRam \
   -configuration Release -destination 'generic/platform=iOS' \
   -archivePath build/GetMoreRam.xcarchive -derivedDataPath build/DerivedData \
-  -disableAutomaticPackageResolution -onlyUseVersionsFromResolvedFile \
+  -disableAutomaticPackageResolution -onlyUsePackageVersionsFromResolvedFile \
   CODE_SIGNING_ALLOWED=NO CODE_SIGNING_REQUIRED=NO CODE_SIGN_IDENTITY='' DEVELOPMENT_TEAM=''
 python3 scripts/package_ipa.py

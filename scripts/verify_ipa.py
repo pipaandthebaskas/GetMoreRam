@@ -59,6 +59,11 @@ def safe_extract(ipa, target):
             require(normalized not in seen, 'archive: duplicate path')
             seen.add(normalized)
         archive.extractall(target)
+        for item in archive.infolist():
+            extracted = target / item.filename
+            if extracted.is_file():
+                # Preserve executable bits without restoring setuid/setgid permissions.
+                extracted.chmod(0o755 if (item.external_attr >> 16) & 0o111 else 0o644)
 
 def run(*args):
     result = subprocess.run(args, capture_output=True, check=False)
