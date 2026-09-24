@@ -1,0 +1,22 @@
+name: Import reviewed source patch
+on:
+  workflow_dispatch:
+permissions:
+  contents: write
+jobs:
+  import:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+      - name: Verify and apply exact reviewed patch
+        shell: bash
+        run: |
+          set -euo pipefail
+          echo '54d830d2412cba905162f7ba954183fc79d59b6374b37e6d015e694a19505b48  GetMoreRam-fixes.patch' | sha256sum -c -
+          git apply --check GetMoreRam-fixes.patch
+          git apply GetMoreRam-fixes.patch
+          git rm GetMoreRam-fixes.patch
+          git add .
+          git -c user.name='github-actions[bot]' -c user.email='41898282+github-actions[bot]@users.noreply.github.com' commit -m 'Fix capability verification and private local authentication'
+          git push origin HEAD:main
