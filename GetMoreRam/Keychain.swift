@@ -81,8 +81,15 @@ public class Keychain
     @KeychainItem(key: "adiPb")
     public var adiPb: String?
     
-    private init()
-    {
+    private init() {
+        // Remove legacy iCloud-synchronized entries; do not copy credentials back from cloud.
+        keychain.removeLegacySynchronizedItems()
+    }
+
+    public func checkStorage() throws {
+        let status = SystemKeychain.lastStatus
+        SystemKeychain.lastStatus = errSecSuccess
+        guard status == errSecSuccess else { throw "Secure local storage failed (OSStatus \(status)). Unlock the device and retry." }
     }
     
     public func reset()
@@ -96,6 +103,14 @@ public class Keychain
 
 fileprivate struct SystemKeychain {
     let service: String
+    static var lastStatus: OSStatus = errSecSuccess
+
+    func removeLegacySynchronizedItems() {
+        let query: [String: Any] = [kSecClass as String: kSecClassGenericPassword,
+            kSecAttrService as String: service, kSecAttrSynchronizable as String: true]
+        let status = SecItemDelete(query as CFDictionary)
+        if status != errSecSuccess && status != errSecItemNotFound { Self.lastStatus = status }
+    }
     
     func data(for key: String) -> Data? {
         var query = baseQuery(for: key)
@@ -104,7 +119,10 @@ fileprivate struct SystemKeychain {
         
         var result: AnyObject?
         let status = SecItemCopyMatching(query as CFDictionary, &result)
-        guard status == errSecSuccess else { return nil }
+        guard status == errSecSuccess else {
+            if status != errSecItemNotFound { Self.lastStatus = status }
+            return nil
+        }
         return result as? Data
     }
     
@@ -118,20 +136,22 @@ fileprivate struct SystemKeychain {
     }
     
     func set(_ data: Data?, for key: String) {
-        deleteItem(for: key)
-        
-        guard let data else { return }
-        
-        var attributes = baseQuery(for: key)
-        attributes[kSecAttrAccessible as String] = kSecAttrAccessibleAfterFirstUnlock
-        attributes[kSecValueData as String] = data
-        SecItemAdd(attributes as CFDictionary, nil)
+        guard let data else { deleteItem(for: key); return }
+        let updates: [String: Any] = [kSecAttrAccessible as String: kSecAttrAccessibleWhenUnlockedThisDeviceOnly,
+                                     kSecValueData as String: data]
+        var status = SecItemUpdate(baseQuery(for: key) as CFDictionary, updates as CFDictionary)
+        if status == errSecItemNotFound {
+            let attributes = baseQuery(for: key).merging(updates) { _, new in new }
+            status = SecItemAdd(attributes as CFDictionary, nil)
+        }
+        if status != errSecSuccess { Self.lastStatus = status }
     }
     
     private func deleteItem(for key: String) {
         var query = baseQuery(for: key)
         query[kSecAttrSynchronizable as String] = kSecAttrSynchronizableAny
-        SecItemDelete(query as CFDictionary)
+        let status = SecItemDelete(query as CFDictionary)
+        if status != errSecSuccess && status != errSecItemNotFound { Self.lastStatus = status }
     }
     
     private func baseQuery(for key: String) -> [String: Any] {
@@ -139,7 +159,7 @@ fileprivate struct SystemKeychain {
             kSecClass as String: kSecClassGenericPassword,
             kSecAttrService as String: service,
             kSecAttrAccount as String: key,
-            kSecAttrSynchronizable as String: kCFBooleanTrue as Any
+            kSecAttrSynchronizable as String: kCFBooleanFalse as Any
         ]
     }
 }

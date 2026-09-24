@@ -55,17 +55,23 @@ struct SettingsView: View {
             
             Section {
                 HStack {
-                    Text("Anisette Server URL")
+                    Text("Local Anisette URL")
                     Spacer()
                     TextField("", text: $sharedModel.anisetteServerURL)
                         .multilineTextAlignment(.trailing)
+                        .disabled(sharedModel.isOperationInProgress)
                 }
             }
             
             Section {
+                Text("Privacy mode: only numeric loopback Anisette endpoints are allowed. Run your own V3 service locally or through a loopback tunnel. Public services are blocked because V3 transmits provisioning secrets.")
+                    .font(.footnote)
+            }
+            Section {
                 Button("Clean Up Keychain") {
                     cleanUp()
                 }
+                .disabled(sharedModel.isOperationInProgress)
             } footer: {
                 Text("If something went wrong during signing in, please try to clean up the keychain, repoen the app and try again. \n \nIf you use SideStore and are already signed in, please also try exporting SideStore Account from SideStore settings and import it here to sign in.")
             }

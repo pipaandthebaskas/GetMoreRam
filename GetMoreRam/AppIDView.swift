@@ -18,15 +18,18 @@ struct AppIDEditView : View {
                 Button {
                     Task { await addIncreasedMemoryLimit() }
                 } label: {
-                    Text("Add Increased Memory Limit")
+                    Text("Enable and Verify Profile")
                 }
+                .disabled(viewModel.isBusy)
+                Text("Apply separately to each exact bundle identifier. A capability update does not change an installed signature.")
+                    .font(.footnote)
             }
-            
+
             Section {
                 Text(viewModel.result)
                     .font(.system(.subheadline, design: .monospaced))
             } header: {
-                Text("Server Response")
+                Text("Verification Stages")
             }
         }
         .alert("Error", isPresented: $errorShow){

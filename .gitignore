@@ -1,2 +1,9 @@
 .DS_Store
 xcuserdata
+# Local diagnostics and account artifacts
+build/
+.build/
+__pycache__/
+*.mobileprovision
+*.p12
+*.ipa

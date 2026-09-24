@@ -53,6 +53,9 @@ class LoginViewModel: ObservableObject {
             return false
         }
         
+        guard !DataManager.shared.model.isOperationInProgress else { throw "Another Apple operation is running. Wait for it to finish." }
+        DataManager.shared.model.isOperationInProgress = true
+        defer { DataManager.shared.model.isOperationInProgress = false }
         logs = ""
         isLoginInProgress = true
         isAuthenticationCancellationRequested = false
@@ -66,6 +69,7 @@ class LoginViewModel: ObservableObject {
         AnisetteDataHelper.shared.loggingFunc = logging
 
         defer {
+            AnisetteDataHelper.shared.loggingFunc = nil
             verificationCodeHandler = nil
             appleID = ""
             password = ""
@@ -77,8 +81,11 @@ class LoginViewModel: ObservableObject {
         }
 
         do {
+            AnisetteDataHelper.shared.url = URL(string: DataManager.shared.model.anisetteServerURL)
+            logging(text: "[anisette] Obtaining headers from local service.")
             let anisetteData = try await AnisetteDataHelper.shared.getAnisetteData()
 
+            logging(text: "[authentication] Starting Apple SRP and 2FA if required.")
             let (account, session) = try await AppleAPI.shared.authenticate(appleID: appleID, password: password, anisetteData: anisetteData) { [weak self] completionHandler in
                 guard let self else {
                     completionHandler(nil)
@@ -99,6 +106,7 @@ class LoginViewModel: ObservableObject {
             Keychain.shared.appleIDEmailAddress = appleID
             Keychain.shared.appleIDPassword = password
 
+            try Keychain.shared.checkStorage()
             let teams = try await fetchTeams(for: account, session: session)
             logging(text: "Successfully fetched teams")
             availableTeams = teams
@@ -108,7 +116,7 @@ class LoginViewModel: ObservableObject {
             if isAuthenticationCancellationRequested {
                 throw CancellationError()
             }
-            print(error)
+            logging(text: "Authentication stopped: " + error.detailedDescription)
             throw error
         }
     }

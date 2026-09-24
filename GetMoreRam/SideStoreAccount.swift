@@ -74,7 +74,7 @@ enum SideStoreAccountImporter {
         let account = try JSONDecoder().decode(SideStoreAccount.self, from: data)
         
         let email = account.email.trimmingCharacters(in: .whitespacesAndNewlines)
-        let password = account.password.trimmingCharacters(in: .whitespacesAndNewlines)
+        let password = account.password
         let adiPB = account.adiPB.trimmingCharacters(in: .whitespacesAndNewlines)
         let localUser = account.localUser.trimmingCharacters(in: .whitespacesAndNewlines)
         
@@ -90,6 +90,7 @@ enum SideStoreAccountImporter {
         Keychain.shared.appleIDPassword = password
         Keychain.shared.adiPb = adiPB
         Keychain.shared.identifier = localUser
+        try Keychain.shared.checkStorage()
         AnisetteDataHelper.shared.resetClientInfo()
         
         return SideStoreAccount(email: email, password: password, adiPB: adiPB, localUser: localUser)

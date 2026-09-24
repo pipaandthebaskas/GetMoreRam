@@ -128,7 +128,7 @@
 			mainGroup = 173496E72D847E82007994DB;
 			minimizedProjectReferenceProxies = 1;
 			packageReferences = (
-				4E9544CF30558D4400540EF8 /* XCRemoteSwiftPackageReference "StosSign" */,
+				4E9544CF30558D4400540EF8 /* XCLocalSwiftPackageReference "StosSign" */,
 			);
 			preferredProjectObjectVersion = 77;
 			productRefGroup = 173496F12D847E82007994DB /* Products */;
@@ -288,7 +288,7 @@
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
 				DEVELOPMENT_ASSET_PATHS = "\"GetMoreRam/Preview Content\"";
-				DEVELOPMENT_TEAM = 3C3YHUUV75;
+				DEVELOPMENT_TEAM = "";
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = GetMoreRam/Info.plist;
@@ -320,7 +320,7 @@
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
 				DEVELOPMENT_ASSET_PATHS = "\"GetMoreRam/Preview Content\"";
-				DEVELOPMENT_TEAM = 3C3YHUUV75;
+				DEVELOPMENT_TEAM = "";
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = GetMoreRam/Info.plist;
@@ -367,31 +367,27 @@
 		};
 /* End XCConfigurationList section */
 
-/* Begin XCRemoteSwiftPackageReference section */
-		4E9544CF30558D4400540EF8 /* XCRemoteSwiftPackageReference "StosSign" */ = {
-			isa = XCRemoteSwiftPackageReference;
-			repositoryURL = "https://github.com/stossy11/StosSign";
-			requirement = {
-				branch = main;
-				kind = branch;
-			};
+/* Begin XCLocalSwiftPackageReference section */
+		4E9544CF30558D4400540EF8 /* XCLocalSwiftPackageReference "StosSign" */ = {
+			isa = XCLocalSwiftPackageReference;
+			relativePath = Vendor/StosSign;
 		};
-/* End XCRemoteSwiftPackageReference section */
+/* End XCLocalSwiftPackageReference section */
 
 /* Begin XCSwiftPackageProductDependency section */
 		4E9544D030558D4400540EF8 /* StosSign_API */ = {
 			isa = XCSwiftPackageProductDependency;
-			package = 4E9544CF30558D4400540EF8 /* XCRemoteSwiftPackageReference "StosSign" */;
+			package = 4E9544CF30558D4400540EF8 /* XCLocalSwiftPackageReference "StosSign" */;
 			productName = StosSign_API;
 		};
 		4E9544D230558D4400540EF8 /* StosSign_Auth */ = {
 			isa = XCSwiftPackageProductDependency;
-			package = 4E9544CF30558D4400540EF8 /* XCRemoteSwiftPackageReference "StosSign" */;
+			package = 4E9544CF30558D4400540EF8 /* XCLocalSwiftPackageReference "StosSign" */;
 			productName = StosSign_Auth;
 		};
 		4E9544D430558D4400540EF8 /* StosSign_Common */ = {
 			isa = XCSwiftPackageProductDependency;
-			package = 4E9544CF30558D4400540EF8 /* XCRemoteSwiftPackageReference "StosSign" */;
+			package = 4E9544CF30558D4400540EF8 /* XCLocalSwiftPackageReference "StosSign" */;
 			productName = StosSign_Common;
 		};
 /* End XCSwiftPackageProductDependency section */

@@ -84,7 +84,8 @@ extension String: @retroactive LocalizedError {
 
 class SharedModel: ObservableObject {
     @Published var isLogin = false
-    @AppStorage("AnisetteServer") var anisetteServerURL = "https://ani.sidestore.io"
+    @Published var isOperationInProgress = false
+    @AppStorage("AnisetteServer") var anisetteServerURL = "http://127.0.0.1:6969"
     var session: AppleAPISession?
     var account: Account?
     var team: Team?
@@ -101,34 +102,14 @@ class DataManager {
 
 extension Error {
     var detailedDescription: String {
-        let localizedError = self as? LocalizedError
-        var lines: [String] = []
-        
-        if let description = localizedError?.errorDescription, !description.isEmpty {
-            lines.append(description)
-        } else {
-            let nsError = self as NSError
-            lines.append(nsError.localizedDescription)
-        }
-        
-        if let failureReason = localizedError?.failureReason, !failureReason.isEmpty {
-            lines.append("Reason: \(failureReason)")
-        }
-        
-        if let recoverySuggestion = localizedError?.recoverySuggestion, !recoverySuggestion.isEmpty {
-            lines.append("Suggestion: \(recoverySuggestion)")
-        }
-        
-        let nsError = self as NSError
-        if nsError.domain != NSCocoaErrorDomain || nsError.code != 0 {
-            lines.append("Domain: \(nsError.domain)")
-            lines.append("Code: \(nsError.code)")
-        }
-        
-        if let underlying = nsError.userInfo[NSUnderlyingErrorKey] as? Error {
-            lines.append("Underlying: \(underlying.detailedDescription)")
-        }
-        
-        return lines.joined(separator: "\n")
+        // Never print arbitrary NSError.userInfo, decoding values, URLs, or server bodies.
+        if let error = self as? ProfileValidationError { return error.localizedDescription }
+        if let error = self as? AppleAPIError { return error.errorDescription ?? "Apple operation failed." }
+        if let message = self as? String { return message }
+        if let error = self as? SideStoreAccountImportError { return error.localizedDescription }
+        if self is CancellationError { return "Cancelled." }
+        let error = self as NSError
+        if error.domain == NSURLErrorDomain { return "Network request failed (code \(error.code)). Check connectivity and local Anisette service." }
+        return "Operation failed (code \(error.code)); sensitive details omitted."
     }
 }
