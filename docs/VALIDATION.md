@@ -1,25 +1,30 @@
 # Validation and remaining gates
 
-## Executed in this workspace
+## Executed
 
-- Python unit tests: 10 passed (exact host/team, profile expiry, strict Boolean,
-  signer stripping, signature mismatch, archive traversal/duplicate paths).
-- Shell build script syntax check passed.
-- `git diff --check` passed.
-- Swift syntax parser reviewed added files; it is not a Swift compiler. The parser
-  also reports constructs in unchanged upstream code, so this is not a build result.
-- Attempted `bash scripts/build_ipa.sh`: stopped at the platform preflight because
-  this Linux host has no Xcode/iOS SDK. No IPA was produced.
-- GitHub fork page redirected to sign-in. No authenticated GitHub session/CLI was
-  available, so no remote fork, push, or Actions run has happened.
+- Fork created: https://github.com/pipaandthebaskas/GetMoreRam
+- Successful macOS build: https://github.com/pipaandthebaskas/GetMoreRam/actions/runs/36000078736
+- Build source: `40f7664da746b4ecf5bededa1499320f2c5b8fbd` (clean checkout).
+- Xcode 26.4.1, build 17E202: **ARCHIVE SUCCEEDED** for generic iOS/arm64.
+- Swift XCTest: **10 tests passed**, covering response errors/redaction, capability
+  preservation/idempotence/schema handling, Apple host allowlist, strict Boolean,
+  exact profile instance/expiry and DER/BER CMS decoding/malformed data.
+- Python unit tests: **10 passed**, covering host/team/profile/signature mismatches,
+  expiry, missing/false/non-Boolean permission and unsafe ZIP paths.
+- Downloaded build artifact digest matched GitHub's published SHA-256.
+- Extracted IPA digest matched its build manifest:
+  `7093c2d3128fce4d65a6573497c47e85bc990e1707ed32d4eaf2596b6fa20118`.
+- IPA contains `Payload/GetMoreRam.app`, a 64-bit Mach-O executable, bundle ID
+  `com.aigch.getMoreRam`, minimum iOS 16.0. It intentionally has no provisioning
+  profile and is not developer signed; SideStore must sign it for installation.
+- The temporary source-transfer workflow was successfully run and removed.
 
 ## Not yet executed
 
-- Swift XCTest suite and iOS archive: require macOS/Xcode.
-- Live Apple API requests: require the user's local authentication and local Anisette.
-- Current account entitlement eligibility: unknown until Apple returns evidence.
-- Real profile payload and final signed IPA checks: no such artifacts were supplied.
-- Device install/run and memory measurement on the user's iPhone: not performed.
+- Live Apple API requests using the user's account/local Anisette.
+- Current free-account entitlement eligibility: unknown until Apple returns evidence.
+- Real LiveContainer3 profile and final signed IPA checks: no such artifacts supplied.
+- Device install/run and memory measurement on the user's iPhone.
 
 The capability endpoint is Apple's private Xcode developer service, not the public
 App Store Connect API. Readback schema support covers capability relationships and
@@ -36,7 +41,7 @@ trust, device authorization, successful installation, or the installed copy's ha
 
 ## Required real-world checks
 
-1. Run the workflow on a fork and inspect the Swift tests and iOS archive result.
+1. Download the tested unsigned GetMoreRam artifact and sign/install it locally.
 2. Configure local-only Anisette. Log in on-device; never put Apple credentials in CI.
 3. Select the team and the exact registered bundle identifier of LiveContainer3.
 4. Enable and verify the profile. A missing Boolean or rejected request is failure.

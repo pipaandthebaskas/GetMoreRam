@@ -7,7 +7,7 @@ Pinned StosSign: `01dd7bc4f5084ade9e2ebbc7e338dc2e3f454d77`.
 
 1. `AppID.init` sets `entitlements = []`; the response initializer never reads entitlements. `AppleAPI.updateAppID` PATCHes Apple's v1 bundle ID endpoint but returns its unchanged input. `AppIDModel` prints that stale object. An empty array is therefore not evidence that Apple rejected this capability.
 2. The request helpers discard HTTP status and do not centrally reject JSON:API `errors` or nonzero legacy `resultCode`. The mutation checks only for a `data` dictionary. No readback occurs.
-3. The update supplies only the requested capability and overwrites unrelated bundle metadata. Existing capability relationships/settings are not read or preserved.
+3. The update supplies only the requested capability and sends unrelated bundle metadata. It does not read existing settings or verify preservation. Whether the private endpoint merges or replaces omitted relationships is not established from the original code alone.
 4. GetMoreRam has no profile generation, IPA import, or IPA signing call. SideStore/AltStore must subsequently obtain a profile and sign the actual LiveContainer host. GetMoreRam cannot change an installed signature.
 5. The unused StosSign provisioning model treats an encoded CMS profile as a plain plist in one initializer and treats outer API metadata as the profile payload in another. Expiry uses `dateExpire` instead of `ExpirationDate`. It is not reliable evidence of signed profile entitlements.
 6. Anisette helper logs raw headers, identifiers and responses. V3 POST sends `identifier` and `adi_pb` to the configured server; provisioning also exchanges `spim`, `cpim`, `ptm`, `tk`. Public Anisette is incompatible with the requested strict session-data privacy boundary.
@@ -32,3 +32,12 @@ https://developer.apple.com/documentation/bundleresources/entitlements/com.apple
 Reviewed all first-party Swift files, plist, project/package configuration and workflow; traced the pinned StosSign auth/API/common models, Anisette and signing paths. The app links API/Auth/Common only, not StosSign's signer or its Anisette implementation. CryptoSwift, swift-crypto, swift-srp/big-num implement cryptography; OpenSSL and swift-certificates are declared by the package. This is an integration/security review, not a cryptographic implementation or binary-supply-chain certification. No Apple account requests were made and no private credentials were requested.
 
 The current host is Linux, with no Swift/Xcode/iOS SDK or GitHub CLI. A local clone is not a GitHub fork. A macOS CI run and account/device verification remain necessary before claiming a working IPA or resolving this specific account's eligibility.
+
+## Implementation/build outcome
+
+The targeted fork now has stage checks, error-envelope handling, capability readback,
+profile payload validation, private local storage and a local final-IPA verifier.
+The macOS build and 20 tests passed; see [validation evidence](VALIDATION.md).
+The account-specific failure remains unconfirmed until LiveContainer3's real profile
+and final SideStore signature are inspected. The new API adapter deliberately fails
+closed on unrecognized responses; it has not been exercised against a live account.
