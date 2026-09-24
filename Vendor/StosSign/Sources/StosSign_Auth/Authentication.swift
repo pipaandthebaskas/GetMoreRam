@@ -141,8 +141,7 @@ public final class Authentication {
                 dsid: dsid,
                 idmsToken: idmsToken,
                 anisetteData: anisetteData,
-                verificationHandler: verificationHandler,
-                twoFactorAttempt: twoFactorAttempt + 1
+                verificationHandler: verificationHandler
             )
             
             return try await authenticate(
@@ -162,8 +161,7 @@ public final class Authentication {
                 dsid: dsid,
                 idmsToken: idmsToken,
                 anisetteData: anisetteData,
-                verificationHandler: verificationHandler,
-                twoFactorAttempt: twoFactorAttempt + 1
+                verificationHandler: verificationHandler
             )
             
             return try await authenticate(
